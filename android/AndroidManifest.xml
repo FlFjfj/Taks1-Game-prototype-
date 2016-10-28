@@ -5,6 +5,8 @@
     android:versionName="1.0" >
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="23" />
+    <permission android:name="android.hardware.sensor.gyroscope"></permission>
+    <permission android:name="android.hardware.sensor.accelerometer"></permission>
 
     <application
         android:allowBackup="true"

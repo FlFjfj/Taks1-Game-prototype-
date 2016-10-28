@@ -71,3 +71,4 @@ project(":android") {
 tasks.eclipse.doLast {
     delete ".project"
 }
+
