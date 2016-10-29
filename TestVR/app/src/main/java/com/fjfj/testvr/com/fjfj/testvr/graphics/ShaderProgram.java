@@ -46,8 +46,6 @@ public class ShaderProgram {
 
     public void begin(){
         GLES20.glUseProgram(shader);
-
-        GLES20.
     }
 
     public void end(){

@@ -27,15 +27,6 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
         gvrView.setRenderer(this);
         setGvrView(gvrView);
 
-        triangle = new Renderable(new float[]{-1, 0, 0,
-                                               1, 0, 0,
-                                               0, 1, 0}
-        );
-
-        ShaderProgram shader = new ShaderProgram(ShaderProgram.getFile(this, R.raw.vert),
-                                                ShaderProgram.getFile(this, R.raw.frag));
-        Renderable.shader = shader;
-
     }
 
     @Override
@@ -49,7 +40,7 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
         GLES20.glClearColor(1, 0, 0, 1);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-        triangle.render();
+        //triangle.render();
 
     }
 
@@ -65,7 +56,14 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
 
     @Override
     public void onSurfaceCreated(EGLConfig eglConfig) {
+        triangle = new Renderable(new float[]{-1, 0, 0,
+                1, 0, 0,
+                0, 1, 0}
+        );
 
+        ShaderProgram shader = new ShaderProgram(ShaderProgram.getFile(this, R.raw.vert),
+                ShaderProgram.getFile(this, R.raw.frag));
+        Renderable.shader = shader;
     }
 
     @Override
