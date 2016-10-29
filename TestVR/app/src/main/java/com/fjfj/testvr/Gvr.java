@@ -57,8 +57,11 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
     @Override
     public void onSurfaceCreated(EGLConfig eglConfig) {
         triangle = new Renderable(new float[]{0, 0.5f, 0,
-                -0.5f, -0.5f, 0f,
-                0.5f, 0.5f, 0}
+                                             -0.5f, -0.5f, 0f,
+                                              0.5f, 0.5f, 0},
+                                  new float[]{1, 0, 0,
+                                              0, 1, 0,
+                                              0, 0, 1}
         );
 
         Renderable.shader = new ShaderProgram(ShaderProgram.getFile(this, R.raw.vert),

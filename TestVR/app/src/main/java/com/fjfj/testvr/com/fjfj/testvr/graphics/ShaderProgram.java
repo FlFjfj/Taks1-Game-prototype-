@@ -13,6 +13,7 @@ public class ShaderProgram {
 
     private int shader;
     public int positionAttrib;
+    public int colorAttrib;
 
     public ShaderProgram(String vertId, String fragId){
 
@@ -42,6 +43,7 @@ public class ShaderProgram {
         GLES20.glUseProgram(shader);
 
         GLES20.glGetAttribLocation(shader, "a_Position");
+        GLES20.glGetAttribLocation(shader, "a_Color");
     }
 
     public void begin(){
