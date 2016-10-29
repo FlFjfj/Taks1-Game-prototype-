@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 
 public class ShaderProgram {
 
-    private int shader;
+    public int shader;
     public int positionAttrib;
     public int colorAttrib;
 

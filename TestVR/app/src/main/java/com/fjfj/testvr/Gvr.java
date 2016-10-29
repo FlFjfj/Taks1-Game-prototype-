@@ -34,6 +34,7 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
     Vector<Monster> monsters;
 
     PrimitiveRenderable floor;
+    CameraRenderer camRend;
 
     int score;
 
@@ -53,6 +54,7 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
         Matrix.setLookAtM(camera, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1, 0);
 
         factory.update();
+        camRend.update();
 
         float forward[] = new float[3];
         headTransform.getForwardVector(forward, 0);
@@ -84,11 +86,15 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
 
         GLES20.glUniformMatrix4fv(PrimitiveRenderable.shader.eyeUniform, 1, false, modelView, 0);
 
-        floor.render();
+        //floor.render();
 
         Iterator<Monster> mi = monsters.iterator();
         while(mi.hasNext())
             mi.next().render();
+
+        GLES20.glUseProgram(0);
+
+        camRend.render();
 
     }
 
@@ -109,6 +115,8 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
 
         monsters = new Vector<Monster>();
         factory = new MonsterFactory(monsters);
+
+        camRend = new CameraRenderer(this);
 
         floor = new PrimitiveRenderable(new float[]{
                 -25f, -1f, -25f,
