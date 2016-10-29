@@ -42,8 +42,8 @@ public class ShaderProgram {
         GLES20.glLinkProgram(shader);
         GLES20.glUseProgram(shader);
 
-        GLES20.glGetAttribLocation(shader, "a_Position");
-        GLES20.glGetAttribLocation(shader, "a_Color");
+        positionAttrib = GLES20.glGetAttribLocation(shader, "a_Position");
+        colorAttrib = GLES20.glGetAttribLocation(shader, "a_Color");
     }
 
     public void begin(){
