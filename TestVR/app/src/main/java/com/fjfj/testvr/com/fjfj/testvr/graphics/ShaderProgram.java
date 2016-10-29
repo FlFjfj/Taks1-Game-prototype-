@@ -15,6 +15,8 @@ public class ShaderProgram {
     public int positionAttrib;
     public int colorAttrib;
 
+    public int eyeUniform;
+
     public ShaderProgram(String vertId, String fragId){
 
         int vertShader = GLES20.glCreateShader(GLES20.GL_VERTEX_SHADER);
@@ -44,6 +46,7 @@ public class ShaderProgram {
 
         positionAttrib = GLES20.glGetAttribLocation(shader, "a_Position");
         colorAttrib = GLES20.glGetAttribLocation(shader, "a_Color");
+        colorAttrib = GLES20.glGetUniformLocation(shader, "u_Eye");
     }
 
     public void begin(){
