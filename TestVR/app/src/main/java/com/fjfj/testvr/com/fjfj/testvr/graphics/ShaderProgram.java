@@ -26,9 +26,9 @@ public class ShaderProgram {
             System.exit(-1);
         }
 
-        int fragShader = GLES20.glCreateShader(GLES20.GL_VERTEX_SHADER);
+        int fragShader = GLES20.glCreateShader(GLES20.GL_FRAGMENT_SHADER);
         GLES20.glShaderSource(fragShader, fragId);
-        GLES20.glCompileShader(vertShader);
+        GLES20.glCompileShader(fragShader);
         GLES20.glGetShaderiv(fragShader, GLES20.GL_COMPILE_STATUS, status, 0);
         if(status[0] == 0){
             System.out.println("Error compiling shader: " + GLES20.glGetShaderInfoLog(fragShader));
@@ -65,6 +65,7 @@ public class ShaderProgram {
             return sb.toString();
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("CANT LOAD SHADER");
         }
         return null;
     }
