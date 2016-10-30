@@ -18,9 +18,10 @@ public class MonsterFactory {
     public void update(){
         delta -= Timing.getDelta();
         if(delta <= 0){
-            delta += rand.nextFloat();
-            monsters.add(new Monster(new float[]{ rand.nextFloat() * 50 - 25, 0,
-                                                  rand.nextFloat()* 50 - 25}));
+            delta += rand.nextFloat() + 0.002;
+            float angle = (float) (rand.nextFloat() * 2 * Math.PI);
+            monsters.add(new Monster(new float[]{(float) (Math.sin(angle) * 16), 0,
+                                                 (float) (Math.cos(angle) * 16)}));
         }
     }
 

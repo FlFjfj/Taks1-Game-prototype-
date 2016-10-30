@@ -7,5 +7,5 @@ uniform samplerExternalOES s_texture;
 uniform mat4 u_VectTrans;
 
 void main(void) {
-    gl_FragColor = u_VectTrans * texture2D( s_texture, textureCoordinate );
+    gl_FragColor = texture2D( s_texture, textureCoordinate );
 }

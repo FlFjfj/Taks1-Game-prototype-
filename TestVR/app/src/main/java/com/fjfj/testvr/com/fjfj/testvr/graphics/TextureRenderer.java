@@ -18,7 +18,7 @@ public class TextureRenderer {
     private FloatBuffer tex_coords;
     private int countVert;
 
-    private int texture;
+    public int texture;
 
     private float[] trans = {0, 0, 0, 0};
 

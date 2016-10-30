@@ -6,7 +6,6 @@ import android.os.Bundle;
 
 import com.fjfj.testvr.GamePlay.Monster;
 import com.fjfj.testvr.GamePlay.MonsterFactory;
-import com.fjfj.testvr.com.fjfj.testvr.graphics.FrameBuffer;
 import com.fjfj.testvr.com.fjfj.testvr.graphics.PrimitiveRenderable;
 import com.fjfj.testvr.com.fjfj.testvr.graphics.ShaderProgram;
 import com.fjfj.testvr.com.fjfj.testvr.graphics.TextureRenderer;
@@ -18,9 +17,6 @@ import com.google.vr.sdk.base.GvrView;
 import com.google.vr.sdk.base.HeadTransform;
 import com.google.vr.sdk.base.Viewport;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -98,9 +94,8 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
 
         GLES20.glUniformMatrix4fv(PrimitiveRenderable.shader.eyeUniform, 1, false, modelView, 0);
 
-        Iterator<Monster> mi = monsters.iterator();
-        while(mi.hasNext())
-           mi.next().render();
+        for(int i = monsters.size() - 1; i >= 0; i--)
+           monsters.get(i).render();
 
         TextureRenderer.shader.end();
 
@@ -129,8 +124,9 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
                 ShaderProgram.getFile(this, R.raw.verttexture),
                 ShaderProgram.getFile(this, R.raw.fragtexture));
 
-        image = TextureRenderer.loadTextures(this.getApplicationContext(), R.raw.monster)[0];
-        monster = new TextureRenderer(image, 5, 5);
+        Monster.images = TextureRenderer.loadTextures(this.getApplicationContext(),
+                R.raw.monster1, R.raw.monster2, R.raw.monster3);
+        monster = new TextureRenderer(image, 3, 3);
         Monster.rend = monster;
     }
 

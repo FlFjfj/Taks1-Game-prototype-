@@ -1,14 +1,16 @@
 package com.fjfj.testvr.GamePlay;
 
-import com.fjfj.testvr.com.fjfj.testvr.graphics.PrimitiveRenderable;
 import com.fjfj.testvr.com.fjfj.testvr.graphics.TextureRenderer;
 import com.fjfj.testvr.utility.Timing;
 import com.fjfj.testvr.utility.Vector3;
 
+import java.util.Random;
+
 public class Monster {
 
     public static TextureRenderer rend;
-    //static PrimitiveRenderable chosed;
+    public static int[] images;
+    public int myImage;
 
     Vector3 pos;
     Vector3 speed;
@@ -18,12 +20,14 @@ public class Monster {
     public Monster(float pos[]){
         this.pos = new Vector3(pos);
         speed = this.pos.cpy().nor().scl(-5);
+
+        myImage = (new Random()).nextInt(3);
     }
 
     public void render(){
-        //if(isWatched)
-        //    chosed.render();
-        //else
+
+        rend.texture = images[myImage];
+
         rend.setTrans(pos.x, pos.y, pos.z);
         rend.render();
 
@@ -31,19 +35,10 @@ public class Monster {
 
     public boolean update(Vector3 watch){
 
-        //isWatched = isChoosed(watch);
-
-        //angle += Timing.getDelta();
-
         Vector3 delta = speed.cpy().scl(Timing.getDelta());
         pos.add(delta);
         if(!pos.hasOppositeDirection(speed))
             return false;
-
-        //if(isWatched)
-        //    chosed.setTrans(pos.x, pos.y, pos.z);
-        //else
-        //rend.setTrans(pos.x, pos.y, pos.z);
         return true;
     }
 
