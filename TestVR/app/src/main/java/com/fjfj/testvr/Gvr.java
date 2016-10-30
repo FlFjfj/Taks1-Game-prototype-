@@ -16,8 +16,6 @@ import com.google.vr.sdk.base.GvrActivity;
 import com.google.vr.sdk.base.GvrView;
 import com.google.vr.sdk.base.HeadTransform;
 import com.google.vr.sdk.base.Viewport;
-
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -34,9 +32,6 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
     Vector<Monster> monsters;
 
     CameraRenderer camRend;
-
-    //FrameBuffer fb;
-    TextureRenderer screen;
 
     TextureRenderer monster;
     int image;
@@ -98,9 +93,8 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
 
         GLES20.glUniformMatrix4fv(PrimitiveRenderable.shader.eyeUniform, 1, false, modelView, 0);
 
-        Iterator<Monster> mi = monsters.iterator();
-        while(mi.hasNext())
-           mi.next().render();
+        for(int i = monsters.size() - 1; i >= 0; i--)
+           monsters.get(i).render();
 
         TextureRenderer.shader.end();
 
@@ -129,8 +123,9 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
                 ShaderProgram.getFile(this, R.raw.verttexture),
                 ShaderProgram.getFile(this, R.raw.fragtexture));
 
-        image = TextureRenderer.loadTextures(this.getApplicationContext(), R.raw.monster)[0];
-        monster = new TextureRenderer(image, 5, 5);
+        Monster.images = TextureRenderer.loadTextures(this.getApplicationContext(),
+                R.raw.monster1, R.raw.monster2, R.raw.monster3);
+        monster = new TextureRenderer(image, 3, 3);
         Monster.rend = monster;
 
         as = new AudioSupport(this);
