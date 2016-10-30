@@ -6,7 +6,6 @@ import android.os.Bundle;
 
 import com.fjfj.testvr.GamePlay.Monster;
 import com.fjfj.testvr.GamePlay.MonsterFactory;
-import com.fjfj.testvr.com.fjfj.testvr.graphics.FrameBuffer;
 import com.fjfj.testvr.com.fjfj.testvr.graphics.PrimitiveRenderable;
 import com.fjfj.testvr.com.fjfj.testvr.graphics.ShaderProgram;
 import com.fjfj.testvr.com.fjfj.testvr.graphics.TextureRenderer;
@@ -18,8 +17,6 @@ import com.google.vr.sdk.base.GvrView;
 import com.google.vr.sdk.base.HeadTransform;
 import com.google.vr.sdk.base.Viewport;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -29,7 +26,6 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
 
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 100.0f;
-
     float camera[] = new float[16];
     float view[] = new float[16];
     float modelView[] = new float[16];
@@ -46,6 +42,8 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
     int image;
 
     int score;
+
+    AudioSupport as;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,15 +68,17 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
         Vector<Monster> delete = new Vector<Monster>();
         Vector3 watch = new Vector3(forward).nor();
         for (Monster m : monsters)
-            if (!m.update(watch)){
+            if (!m.update(watch)) {
                 delete.add(m);
-                if(m.isChoosed(watch))
+                if (m.isChoosed(watch))
                     score++;
                 else
                     score--;
             }
         monsters.removeAll(delete);
-}
+
+        AudioSupport.resultsSound = as.ftThread.getResults();
+    }
 
     @Override
     public void onDrawEye(Eye eye) {
@@ -132,6 +132,8 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
         image = TextureRenderer.loadTextures(this.getApplicationContext(), R.raw.monster)[0];
         monster = new TextureRenderer(image, 5, 5);
         Monster.rend = monster;
+
+        as = new AudioSupport(this);
     }
 
     @Override

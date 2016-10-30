@@ -4,6 +4,7 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.opengl.GLES11;
 import android.opengl.GLES20;
+import android.os.SystemClock;
 
 import com.fjfj.testvr.com.fjfj.testvr.graphics.ShaderProgram;
 import com.fjfj.testvr.utility.Timing;
@@ -13,9 +14,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
 
-import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.opengles.GL10;
 
 public class CameraRenderer implements SurfaceTexture.OnFrameAvailableListener {
@@ -95,21 +94,31 @@ public class CameraRenderer implements SurfaceTexture.OnFrameAvailableListener {
 
     private void genVerts() {
 
-        float y = (float) (Math.sin(delta)/4f);
-        float x = (float) (Math.sin(delta * 3)/4f);
+        float sampleInfluense = 1;
 
-        squareVertices[1] = y;
-        squareVertices[10] = y;
-        squareVertices[19] = y;
-        squareVertices[28] = y;
+        if(AudioSupport.resultsSound != null) {
+            float timeFromStart = SystemClock.elapsedRealtime() - AudioSupport.startTime;
+            int samplesFromStart = (int) (timeFromStart / 1000f * AudioSupport.SampleRate);
+            int realSamplesBack = Math.max(0, (samplesFromStart) % AudioSupport.resultsSound.length - 1000);
+            if(realSamplesBack!=0)
+                 sampleInfluense = AudioSupport.resultsSound[samplesFromStart%AudioSupport.resultsSound.length]/realSamplesBack;
+        }
+            float y = (float) (Math.sin(delta * sampleInfluense) / 4f);
+            float x = (float) (Math.sin(delta + sampleInfluense) / 4f);
 
-        squareVertices[0] = x;
-        squareVertices[9] = x;
-        squareVertices[18] = x;
-        squareVertices[27] = x;
+            squareVertices[1] = y;
+            squareVertices[10] = y;
+            squareVertices[19] = y;
+            squareVertices[28] = y;
 
-        vertexBuffer.put(squareVertices);
-        vertexBuffer.position(0);
+            squareVertices[0] = x;
+            squareVertices[9] = x;
+            squareVertices[18] = x;
+            squareVertices[27] = x;
+
+            vertexBuffer.put(squareVertices);
+            vertexBuffer.position(0);
+
     }
 
     public void startCamera(int texture) {
@@ -147,7 +156,6 @@ public class CameraRenderer implements SurfaceTexture.OnFrameAvailableListener {
         delta += Timing.getDelta();
         genVerts();
         surface.updateTexImage();
-
     }
 
     public void render(){
