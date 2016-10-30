@@ -41,13 +41,13 @@ public class PrimitiveRenderable
     }
 
     public void render(){
+        GLES20.glEnableVertexAttribArray(shader.positionAttrib);
+        GLES20.glEnableVertexAttribArray(shader.colorAttrib);
+
         GLES20.glVertexAttribPointer(shader.positionAttrib, 3, GLES20.GL_FLOAT, false, 0, verts);
         GLES20.glVertexAttribPointer(shader.colorAttrib, 4, GLES20.GL_FLOAT, false, 0, colors);
 
         GLES20.glUniform4f(shader.transUniform, trans[0], trans[1], trans[2], trans[3]);
-
-        GLES20.glEnableVertexAttribArray(shader.positionAttrib);
-        GLES20.glEnableVertexAttribArray(shader.colorAttrib);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, countVert);
     }

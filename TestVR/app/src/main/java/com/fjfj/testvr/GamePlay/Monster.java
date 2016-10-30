@@ -1,50 +1,31 @@
 package com.fjfj.testvr.GamePlay;
 
 import com.fjfj.testvr.com.fjfj.testvr.graphics.PrimitiveRenderable;
+import com.fjfj.testvr.com.fjfj.testvr.graphics.TextureRenderer;
 import com.fjfj.testvr.utility.Timing;
 import com.fjfj.testvr.utility.Vector3;
 
 public class Monster {
 
-    static PrimitiveRenderable rend;
+    public static TextureRenderer rend;
     //static PrimitiveRenderable chosed;
 
     Vector3 pos;
     Vector3 speed;
 
-    boolean isWatched = false;
-    float angle = 0;
-
-    {
-        rend = new PrimitiveRenderable(new float[]{0, 1f, 0f,
-                -1f, -1f, 0f,
-                1f, -1f, 0f},
-                new float[]{1, 0, 0, 1,
-                            1, 0, 0, 1,
-                            1, 0, 0, 1}
-        );
-
-        /*chosed = new PrimitiveRenderable(new float[]{0, 1f, 0f,
-                -1f, -1f, 0f,
-                 1f, -1f, 0f},
-                new float[]{0, 0, 1, 1,
-                            0, 0, 1, 1,
-                            0, 0, 1, 1}
-        );*/
-
-    }
+    //boolean isWatched = false;
 
     public Monster(float pos[]){
         this.pos = new Vector3(pos);
-        speed = this.pos.cpy().nor().scl(-1);
-
+        speed = this.pos.cpy().nor().scl(-5);
     }
 
     public void render(){
         //if(isWatched)
         //    chosed.render();
         //else
-            rend.render();
+        rend.setTrans(pos.x, pos.y, pos.z);
+        rend.render();
 
     }
 
@@ -52,7 +33,7 @@ public class Monster {
 
         //isWatched = isChoosed(watch);
 
-        angle += Timing.getDelta();
+        //angle += Timing.getDelta();
 
         Vector3 delta = speed.cpy().scl(Timing.getDelta());
         pos.add(delta);
@@ -62,7 +43,7 @@ public class Monster {
         //if(isWatched)
         //    chosed.setTrans(pos.x, pos.y, pos.z);
         //else
-            rend.setTrans(pos.x, pos.y, pos.z);
+        //rend.setTrans(pos.x, pos.y, pos.z);
         return true;
     }
 

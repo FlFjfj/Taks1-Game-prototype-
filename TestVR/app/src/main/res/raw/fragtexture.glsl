@@ -1,9 +1,12 @@
 precision mediump float;
 
 uniform mat4 u_Eye;
+uniform vec4 u_Trans;
 
-varying vec4 v_Color;
+uniform sampler2D texFramebuffer;
+
+varying vec2 v_TexCoord;
 
 void main() {
-    gl_FragColor = v_Color;
+    gl_FragColor = texture2D(texFramebuffer, v_TexCoord);
 }

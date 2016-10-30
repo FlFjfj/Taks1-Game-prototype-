@@ -2,9 +2,11 @@ package com.fjfj.testvr;
 
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.opengl.GLES11;
 import android.opengl.GLES20;
 
 import com.fjfj.testvr.com.fjfj.testvr.graphics.ShaderProgram;
+import com.fjfj.testvr.utility.Timing;
 import com.google.vr.sdk.base.GvrActivity;
 
 import java.io.IOException;
@@ -13,6 +15,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
+import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.opengles.GL10;
 
 public class CameraRenderer implements SurfaceTexture.OnFrameAvailableListener {
@@ -22,51 +25,60 @@ public class CameraRenderer implements SurfaceTexture.OnFrameAvailableListener {
     private static final int GL_TEXTURE_EXTERNAL_OES = 0x8D65;
 
     private FloatBuffer vertexBuffer, textureVerticesBuffer;
-    private ShortBuffer drawListBuffer;
-    static final int COORDS_PER_VERTEX = 2;
-    private final int vertexStride = COORDS_PER_VERTEX * 4;
+    static final int COORDS_PER_VERTEX = 3;
 
 
     static float squareVertices[] = { // in counterclockwise order:
-            -1.0f, -1.0f,   // 0.left - mid
-            1.0f, -1.0f,   // 1. right - mid
-            -1.0f, 1.0f,   // 2. left - top
-            1.0f, 1.0f,   // 3. right - top
+             0, 0, 1,
+             1, -1,1,
+            -1,-1, 1,
+
+            0,0,1,
+            1,1,1,
+            1,-1,1,
+
+            0,0,1,
+            -1,1,1,
+            1,1,1,
+
+            0,0,1,
+            -1,-1,1,
+            -1,1,1
+
     };
 
-    private short drawOrder[] = {0, 2, 1, 1, 2, 3};
-
     static float textureVertices[] = {
-            0.0f, 1.0f,  // A. left-bottom
-            1.0f, 1.0f,  // B. right-bottom
-            0.0f, 0.0f,  // C. left-top
-            1.0f, 0.0f   // D. right-top
+            0.5f,0.5f,
+            1,   1,
+            0,   1,
+
+            0.5f,0.5f,
+            1,0,
+            1,1,
+
+            0.5f,0.5f,
+            0,0,
+            1,0,
+
+            0.5f,0.5f,
+            0,1,
+            0,0
     };
 
     private Camera camera;
-    private int texture;
+    public int texture;
     private SurfaceTexture surface;
-    private float[] mView;
-    private float[] mCamera;
     private int mPositionHandle;
     private int mTextureCoordHandle;
 
-    public CameraRenderer(GvrActivity gvr) {
-        mCamera = new float[16];
-        mView = new float[16];
+    float delta = 0;
 
+    public CameraRenderer(GvrActivity gvr) {
         ByteBuffer bb = ByteBuffer.allocateDirect(squareVertices.length * 4);
         bb.order(ByteOrder.nativeOrder());
         vertexBuffer = bb.asFloatBuffer();
         vertexBuffer.put(squareVertices);
         vertexBuffer.position(0);
-
-        ByteBuffer dlb = ByteBuffer.allocateDirect(drawOrder.length * 2);
-        dlb.order(ByteOrder.nativeOrder());
-        drawListBuffer = dlb.asShortBuffer();
-        drawListBuffer.put(drawOrder);
-        drawListBuffer.position(0);
-
 
         ByteBuffer bb2 = ByteBuffer.allocateDirect(textureVertices.length * 4);
         bb2.order(ByteOrder.nativeOrder());
@@ -81,10 +93,28 @@ public class CameraRenderer implements SurfaceTexture.OnFrameAvailableListener {
         startCamera(texture);
     }
 
+    private void genVerts() {
+
+        float y = (float) (Math.sin(delta)/4f);
+        float x = (float) (Math.sin(delta * 3)/4f);
+
+        squareVertices[1] = y;
+        squareVertices[10] = y;
+        squareVertices[19] = y;
+        squareVertices[28] = y;
+
+        squareVertices[0] = x;
+        squareVertices[9] = x;
+        squareVertices[18] = x;
+        squareVertices[27] = x;
+
+        vertexBuffer.put(squareVertices);
+        vertexBuffer.position(0);
+    }
+
     public void startCamera(int texture) {
         surface = new SurfaceTexture(texture);
         surface.setOnFrameAvailableListener(this);
-
         camera = Camera.open();
 
         try
@@ -114,7 +144,10 @@ public class CameraRenderer implements SurfaceTexture.OnFrameAvailableListener {
     }
 
     public void update(){
+        delta += Timing.getDelta();
+        genVerts();
         surface.updateTexImage();
+
     }
 
     public void render(){
@@ -125,16 +158,15 @@ public class CameraRenderer implements SurfaceTexture.OnFrameAvailableListener {
 
         mPositionHandle = shader.positionAttrib;
         GLES20.glEnableVertexAttribArray(mPositionHandle);
-        GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT,
-                false,vertexStride, vertexBuffer);
+        GLES20.glVertexAttribPointer(mPositionHandle, 3, GLES20.GL_FLOAT,
+                false,0, vertexBuffer);
 
         mTextureCoordHandle = GLES20.glGetAttribLocation(shader.shader, "inputTextureCoordinate");
         GLES20.glEnableVertexAttribArray(mTextureCoordHandle);
-        GLES20.glVertexAttribPointer(mTextureCoordHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT,
-                false,vertexStride, textureVerticesBuffer);
+        GLES20.glVertexAttribPointer(mTextureCoordHandle, 2, GLES20.GL_FLOAT,
+                false, 0, textureVerticesBuffer);
 
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length,
-                GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 12);
 
         GLES20.glUseProgram(0);
         GLES20.glActiveTexture(0);

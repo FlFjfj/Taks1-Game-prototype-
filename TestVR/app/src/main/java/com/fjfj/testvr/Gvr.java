@@ -6,8 +6,10 @@ import android.os.Bundle;
 
 import com.fjfj.testvr.GamePlay.Monster;
 import com.fjfj.testvr.GamePlay.MonsterFactory;
+import com.fjfj.testvr.com.fjfj.testvr.graphics.FrameBuffer;
 import com.fjfj.testvr.com.fjfj.testvr.graphics.PrimitiveRenderable;
 import com.fjfj.testvr.com.fjfj.testvr.graphics.ShaderProgram;
+import com.fjfj.testvr.com.fjfj.testvr.graphics.TextureRenderer;
 import com.fjfj.testvr.utility.Timing;
 import com.fjfj.testvr.utility.Vector3;
 import com.google.vr.sdk.base.Eye;
@@ -16,6 +18,8 @@ import com.google.vr.sdk.base.GvrView;
 import com.google.vr.sdk.base.HeadTransform;
 import com.google.vr.sdk.base.Viewport;
 
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -33,8 +37,13 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
     MonsterFactory factory;
     Vector<Monster> monsters;
 
-    PrimitiveRenderable floor;
     CameraRenderer camRend;
+
+    //FrameBuffer fb;
+    TextureRenderer screen;
+
+    TextureRenderer monster;
+    int image;
 
     int score;
 
@@ -69,37 +78,36 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
                     score--;
             }
         monsters.removeAll(delete);
-    }
+}
 
     @Override
     public void onDrawEye(Eye eye) {
+
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glClearColor(1, 1, 1, 1);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+
+        camRend.render();
+
+        TextureRenderer.shader.begin();
 
         Matrix.multiplyMM(view, 0, eye.getEyeView(), 0, camera, 0);
 
         float[] perspective = eye.getPerspective(Z_NEAR, Z_FAR);
         Matrix.multiplyMM(modelView, 0, perspective, 0, eye.getEyeView(), 0);
 
-        PrimitiveRenderable.shader.begin();
-
         GLES20.glUniformMatrix4fv(PrimitiveRenderable.shader.eyeUniform, 1, false, modelView, 0);
-
-        //floor.render();
 
         Iterator<Monster> mi = monsters.iterator();
         while(mi.hasNext())
-            mi.next().render();
+           mi.next().render();
 
-        GLES20.glUseProgram(0);
-
-        camRend.render();
+        TextureRenderer.shader.end();
 
     }
 
     @Override
-    public void onFinishFrame(Viewport viewport) {
+    public void onFinishFrame(Viewport viewport) {;
         Timing.update();
     }
 
@@ -115,24 +123,15 @@ public class Gvr extends GvrActivity implements GvrView.StereoRenderer{
 
         monsters = new Vector<Monster>();
         factory = new MonsterFactory(monsters);
-
         camRend = new CameraRenderer(this);
 
-        floor = new PrimitiveRenderable(new float[]{
-                -25f, -1f, -25f,
-                 25f, -1f, -25f,
-                 25f, -1f,  25f,
-                -25f, -1f, -25f,
-                -25f, -1f,  25f,
-                 25f, -1f,  25f,
-        }, new float[]{
-                0,0,0,1,
-                0,0,0,1,
-                0,0,0,1,
-                0,0,0,1,
-                0,0,0,1,
-                0,0,0,1
-        });
+        TextureRenderer.shader = new ShaderProgram(
+                ShaderProgram.getFile(this, R.raw.verttexture),
+                ShaderProgram.getFile(this, R.raw.fragtexture));
+
+        image = TextureRenderer.loadTextures(this.getApplicationContext(), R.raw.monster)[0];
+        monster = new TextureRenderer(image, 5, 5);
+        Monster.rend = monster;
     }
 
     @Override

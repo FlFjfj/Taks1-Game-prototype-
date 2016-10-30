@@ -46,7 +46,6 @@ public class ShaderProgram {
         GLES20.glUseProgram(shader);
 
         positionAttrib = GLES20.glGetAttribLocation(shader, "a_Position");
-        colorAttrib = GLES20.glGetAttribLocation(shader, "a_Color");
         eyeUniform = GLES20.glGetUniformLocation(shader, "u_Eye");
         transUniform = GLES20.glGetUniformLocation(shader, "u_Trans");
     }

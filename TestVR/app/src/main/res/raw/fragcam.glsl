@@ -2,8 +2,10 @@
 precision mediump float; 
 
 varying vec2 textureCoordinate;                             
-uniform samplerExternalOES s_texture;
 
-void main(void) { 
-        gl_FragColor = texture2D( s_texture, textureCoordinate );
+uniform samplerExternalOES s_texture;
+uniform mat4 u_VectTrans;
+
+void main(void) {
+    gl_FragColor = u_VectTrans * texture2D( s_texture, textureCoordinate );
 }
