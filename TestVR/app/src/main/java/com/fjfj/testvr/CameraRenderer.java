@@ -99,9 +99,10 @@ public class CameraRenderer implements SurfaceTexture.OnFrameAvailableListener {
         if(AudioSupport.resultsSound != null) {
             float timeFromStart = SystemClock.elapsedRealtime() - AudioSupport.startTime;
             int samplesFromStart = (int) (timeFromStart / 1000f * AudioSupport.SampleRate);
-            int realSamplesBack = Math.max(0, (samplesFromStart) % AudioSupport.resultsSound.length - 1000);
+            int realSamplesBack = Math.max(0, (samplesFromStart) % AudioSupport.resultsSound.length - 100);
             if(realSamplesBack!=0)
-                 sampleInfluense = AudioSupport.resultsSound[samplesFromStart%AudioSupport.resultsSound.length]/realSamplesBack;
+                 sampleInfluense = (AudioSupport.resultsSound[samplesFromStart%AudioSupport.resultsSound.length] -
+                                    AudioSupport.resultsSound[samplesFromStart%AudioSupport.resultsSound.length -100])/100;
         }
             float y = (float) (Math.sin(delta * sampleInfluense) / 4f);
             float x = (float) (Math.sin(delta + sampleInfluense) / 4f);
