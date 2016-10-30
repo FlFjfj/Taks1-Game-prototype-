@@ -171,8 +171,9 @@ public class CameraRenderer implements SurfaceTexture.OnFrameAvailableListener {
             int samplesFromStart = (int) (timeFromStart / 1000f * AudioSupport.SampleRate);
             if(samplesFromStart%AudioSupport.resultsSound.length >=640) {
                 int cur = samplesFromStart % AudioSupport.resultsSound.length;
-                for (int i = 0; i < 16; i++)
-                    color_trans[i] = (float)Math.sin((AudioSupport.resultsSound[cur-i*40]-AudioSupport.resultsSound[cur-(i+1)*40])/40);
+                for (int i = 0; i < 16; i++) {
+                        color_trans[i] = (float)(1.2*Math.sin((AudioSupport.resultsSound[cur - i * 40] - AudioSupport.resultsSound[cur - (i + 1) * 40]) / 40));
+                }
             }
         }
 
