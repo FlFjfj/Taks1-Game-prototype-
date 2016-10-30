@@ -2,8 +2,8 @@ package com.fjfj.testvr;
 
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
-import android.opengl.GLES11;
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 import android.os.SystemClock;
 
 import com.fjfj.testvr.com.fjfj.testvr.graphics.ShaderProgram;
@@ -104,8 +104,8 @@ public class CameraRenderer implements SurfaceTexture.OnFrameAvailableListener {
                  sampleInfluense = (AudioSupport.resultsSound[samplesFromStart%AudioSupport.resultsSound.length] -
                                     AudioSupport.resultsSound[samplesFromStart%AudioSupport.resultsSound.length -100])/100;
         }
-            float y = (float) (Math.sin(delta * sampleInfluense) / 4f);
-            float x = (float) (Math.sin(delta + sampleInfluense) / 4f);
+            float y = (float) (Math.sin(delta * sampleInfluense*0.1) / 2f);
+            float x = (float) (Math.sin(delta + sampleInfluense*0.1) / 2f);
 
             squareVertices[1] = y;
             squareVertices[10] = y;
@@ -162,6 +162,20 @@ public class CameraRenderer implements SurfaceTexture.OnFrameAvailableListener {
     public void render(){
         shader.begin();
 
+        float color_trans[] = new float[16];
+        Matrix.setIdentityM(color_trans, 0);
+
+        if(AudioSupport.resultsSound != null) {
+
+            float timeFromStart = SystemClock.elapsedRealtime() - AudioSupport.startTime;
+            int samplesFromStart = (int) (timeFromStart / 1000f * AudioSupport.SampleRate);
+            if(samplesFromStart%AudioSupport.resultsSound.length >=640) {
+                int cur = samplesFromStart % AudioSupport.resultsSound.length;
+                for (int i = 0; i < 16; i++)
+                    color_trans[i] = (float)Math.sin((AudioSupport.resultsSound[cur-i*40]-AudioSupport.resultsSound[cur-(i+1)*40])/40);
+            }
+        }
+
         GLES20.glActiveTexture(GL_TEXTURE_EXTERNAL_OES);
         GLES20.glBindTexture(GL_TEXTURE_EXTERNAL_OES, texture);
 
@@ -174,6 +188,10 @@ public class CameraRenderer implements SurfaceTexture.OnFrameAvailableListener {
         GLES20.glEnableVertexAttribArray(mTextureCoordHandle);
         GLES20.glVertexAttribPointer(mTextureCoordHandle, 2, GLES20.GL_FLOAT,
                 false, 0, textureVerticesBuffer);
+
+        mTextureCoordHandle = GLES20.glGetUniformLocation(shader.shader, "u_TransColor");
+        GLES20.glUniformMatrix4fv(mTextureCoordHandle, 1,
+                false, color_trans, 0);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 12);
 
